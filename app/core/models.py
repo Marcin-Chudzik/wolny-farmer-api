@@ -13,11 +13,16 @@ from django.contrib.auth.models import (
 class UserManager(BaseUserManager):
     """Manager for users."""
 
-    def create_user(self, email: str, username: str, password: str) -> "User":
+    def create_user(self, email: str, password: str,
+                    **extra_fields) -> "User":
         """Create, save and return a new user."""
         if not email:
             raise ValueError('User must have an email address.')
-        user = self.model(email=self.normalize_email(email), username=username)
+        user = self.model(
+            email=self.normalize_email(email),
+            username=extra_fields.get('username', email),
+            **extra_fields,
+        )
         user.set_password(password)
         user.save(using=self._db)
 
@@ -29,12 +34,10 @@ class UserManager(BaseUserManager):
         user.is_superuser = True
         user.save(using=self._db)
 
-    def create_superuser(self, email: str, username: str,
-                         password: str) -> "User":
+    def create_superuser(self, email: str, password: str) -> "User":
         """Create and return a new superuser."""
         user = self.create_user(
             email=email,
-            username=username,
             password=password,
         )
         self.promote_to_superuser(user)
