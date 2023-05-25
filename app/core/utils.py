@@ -2,18 +2,19 @@
 Util functions.
 """
 
-from core.models import User
+from django.contrib.auth import get_user_model
 
 
 def create_user(email: str = 'test@example.com', password: str = 'sample123',
-                superuser: bool = False) -> User:
+                superuser: bool = False, **extra_fields) -> "User":
     """Create and return user."""
-    user = User.objects.create_user(
+    user = get_user_model().objects.create_user(
         email=email,
         password=password,
+        **extra_fields,
     )
     if superuser:
         """Promote to superuser."""
-        User.objects.promote_to_superuser(user)
+        get_user_model().objects.promote_to_superuser(user)
 
     return user
