@@ -10,6 +10,8 @@ from django.utils.translation import gettext as _
 
 from rest_framework import serializers
 
+from core.models import User
+
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user objects."""
@@ -19,11 +21,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['email', 'password']
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
-    def create(self, validated_data: dict[str, str]) -> "User":
+    def create(self, validated_data: dict[str, str]) -> User:
         """Create and return a user with encrypted password."""
         return get_user_model().objects.create_user(**validated_data)
 
-    def update(self, instance, validated_data: dict[str, str]) -> "User":
+    def update(self, instance, validated_data: dict[str, str]) -> User:
         """Update and return user."""
         password = validated_data.pop('password', None)
         user = super().update(instance, validated_data)

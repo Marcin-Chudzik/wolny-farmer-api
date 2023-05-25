@@ -4,9 +4,11 @@ Util functions.
 
 from django.contrib.auth import get_user_model
 
+from core.models import User
+
 
 def create_user(email: str = 'test@example.com', password: str = 'sample123',
-                superuser: bool = False, **extra_fields) -> "User":
+                superuser: bool = False, **extra_fields) -> User:
     """Create and return user."""
     user = get_user_model().objects.create_user(
         email=email,
