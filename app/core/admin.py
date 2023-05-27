@@ -5,7 +5,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User
+from .models import (
+    User,
+    Post,
+)
 
 
 @admin.register(User)
@@ -43,3 +46,16 @@ class UserAdmin(BaseUserAdmin):
             )
         }),
     )
+
+
+@admin.register(Post)
+class AdminPost(admin.ModelAdmin):
+    """Define the admin pages for posts."""
+    ordering = ['id']
+    list_display = ['title', 'author', 'status']
+    list_filter = ['author', 'status', 'created', 'updated', 'publish']
+    fieldsets = (
+        (None, {'fields': ('title', 'author', 'status', 'body')}),
+        (_('Important dates'), {'fields': ('created', 'publish', 'updated')})
+    )
+    readonly_fields = ['created', 'publish', 'updated']

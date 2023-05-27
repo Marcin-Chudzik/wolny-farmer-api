@@ -18,10 +18,11 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
-
 from django.contrib import admin
-from django.urls import path, include
-
+from django.urls import (
+    path,
+    include
+)
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -34,6 +35,7 @@ urlpatterns = [
         name='api-docs'
     ),
     path('api/user/', include('user.urls')),
+    path('api/blog/', include('blog.urls')),
 ]
 
 if settings.DEBUG:
