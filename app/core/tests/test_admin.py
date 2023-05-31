@@ -6,10 +6,7 @@ from django.test import (
     Client,
 )
 from django.urls import reverse
-from django.contrib.admin import (
-    site,
-    views,
-)
+from django.contrib import admin
 
 from core.utils import (
     create_user,
@@ -38,7 +35,7 @@ class AdminSiteTests(TestCase):
         - core_<model>_delete
         - core_<model>_change
         """
-        admin_models = [model for model in site._registry.values() if 'core' in str(model)]
+        admin_models = [model for model in admin.site._registry.values() if 'core' in str(model)]
 
         for model in admin_models:
             for pattern in model.get_urls():
@@ -64,3 +61,11 @@ class AdminSiteTests(TestCase):
                             self.assertContains(res, getattr(model_instance, field))
 
                     self.assertEqual(res.status_code, 200)
+
+    """ADMIN USER TESTS"""
+    def test_auth_user_password_change(self):
+        """Test the authenticated user password change page works."""
+        url = reverse('admin:auth_user_password_change', args=[self.user.id])
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
