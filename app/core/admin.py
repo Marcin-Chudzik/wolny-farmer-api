@@ -49,7 +49,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 @admin.register(Post)
-class AdminPost(admin.ModelAdmin):
+class PostAdmin(admin.ModelAdmin):
     """Define the admin pages for posts."""
     ordering = ['id']
     list_display = ['title', 'author', 'status']

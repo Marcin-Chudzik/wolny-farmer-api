@@ -6,8 +6,15 @@ from django.test import (
     Client,
 )
 from django.urls import reverse
+from django.contrib.admin import (
+    site,
+    views,
+)
 
-from core.utils import create_user
+from core.utils import (
+    create_user,
+    create_post,
+)
 
 
 class AdminSiteTests(TestCase):
@@ -18,25 +25,42 @@ class AdminSiteTests(TestCase):
         self.admin_user = create_user(superuser=True)
         self.client.force_login(self.admin_user)
         self.user = create_user(email='other@example.com')
+        self.post = create_post(author=self.user.id)
 
-    def test_users_list(self):
-        """Test that users are listed on page."""
-        url = reverse('admin:core_user_changelist')
-        res = self.client.get(url)
+    def test_admin_models_patterns(self):
+        """
+        Test all default url patterns in admin site for each registered model.
 
-        self.assertContains(res, self.user.username)
-        self.assertContains(res, self.user.email)
+        Tested url patterns:
+        - core_<model>_changelist
+        - core_<model>_add
+        - core_<model>_history
+        - core_<model>_delete
+        - core_<model>_change
+        """
+        admin_models = [model for model in site._registry.values() if 'core' in str(model)]
 
-    def test_edit_user_page(self):
-        """Test the edit user page works."""
-        url = reverse('admin:core_user_change', args=[self.user.id])
-        res = self.client.get(url)
+        for model in admin_models:
+            for pattern in model.get_urls():
+                if pattern.name is not None:
+                    model_name = str(model.opts).replace('core.', '')
+                    model_instance = getattr(self, model_name)
+                    pattern_params = [
+                        'id' if 'id' in param else param
+                        for param in pattern.pattern.converters
+                    ]
 
-        self.assertEqual(res.status_code, 200)
+                    url_params = [getattr(model_instance, param) for param in pattern_params]
 
-    def test_create_user_page(self):
-        """Test the create user page works."""
-        url = reverse('admin:core_user_add')
-        res = self.client.get(url)
+                    if len(url_params) > 0:
+                        url = reverse(f"admin:{pattern.name}", args=url_params)
+                    else:
+                        url = reverse(f"admin:{pattern.name}")
 
-        self.assertEqual(res.status_code, 200)
+                    res = self.client.get(url)
+
+                    if 'list' in pattern.name:
+                        for field in model.list_display:
+                            self.assertContains(res, getattr(model_instance, field))
+
+                    self.assertEqual(res.status_code, 200)
