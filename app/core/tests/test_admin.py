@@ -35,7 +35,8 @@ class AdminSiteTests(TestCase):
         - core_<model>_delete
         - core_<model>_change
         """
-        admin_models = [model for model in admin.site._registry.values() if 'core' in str(model)]
+        admin_models = [model for model in admin.site._registry.values()
+                        if 'core' in str(model)]
 
         for model in admin_models:
             for pattern in model.get_urls():
@@ -47,7 +48,8 @@ class AdminSiteTests(TestCase):
                         for param in pattern.pattern.converters
                     ]
 
-                    url_params = [getattr(model_instance, param) for param in pattern_params]
+                    url_params = [getattr(model_instance, param)
+                                  for param in pattern_params]
 
                     if len(url_params) > 0:
                         url = reverse(f"admin:{pattern.name}", args=url_params)
@@ -58,7 +60,8 @@ class AdminSiteTests(TestCase):
 
                     if 'list' in pattern.name:
                         for field in model.list_display:
-                            self.assertContains(res, getattr(model_instance, field))
+                            self.assertContains(
+                                res, getattr(model_instance, field))
 
                     self.assertEqual(res.status_code, 200)
 
