@@ -21,7 +21,7 @@ class AdminSiteTests(TestCase):
         self.client = Client()
         self.admin_user = create_user(superuser=True)
         self.client.force_login(self.admin_user)
-        self.user = create_user(email='other@example.com')
+        self.user = create_user()
         self.post = create_post(author=self.user.id)
 
     def test_admin_models_patterns(self):

@@ -5,6 +5,7 @@ from core.models import (
     Post,
     User,
 )
+from core.utils import create_post
 from rest_framework import serializers
 
 
@@ -23,10 +24,10 @@ class PostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict[str, str or User]) -> Post:
         """Create and return new post."""
-        return Post.objects.create(**validated_data)
+        return create_post(**validated_data)
 
     def update(self, instance, validated_data: dict[str, str or User]) -> Post:
-        """Update post."""
+        """Update and return post."""
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 

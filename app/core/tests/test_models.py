@@ -16,6 +16,7 @@ class ModelTests(TestCase):
 
     def setUp(self):
         self.user = create_user()
+        self.post = create_post()
         self.user_payload = {
             'email': 'test@example.com',
             'password': 'sample123'
